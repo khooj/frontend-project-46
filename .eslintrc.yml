@@ -22,3 +22,4 @@ rules:
   no-restricted-syntax:
     - 0
     - ForOfStatement
+  no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }]

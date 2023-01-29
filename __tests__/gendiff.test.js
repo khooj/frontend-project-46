@@ -1,9 +1,8 @@
-import genDiff from "../src/diff.js";
 import fs from 'fs';
-import path from 'path';
+import path, { dirname } from 'path';
 import { test, expect } from '@jest/globals';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import genDiff from '../src/diff.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,7 +16,8 @@ const loadFixtures = () => {
   return [obj1, obj2];
 };
 
-let obj1, obj2;
+let obj1; let
+  obj2;
 
 beforeEach(() => {
   const [o1, o2] = loadFixtures();
