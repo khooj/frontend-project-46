@@ -1,4 +1,4 @@
-name: nodejs tests
+name: nodejs
 on:
   - push
   - pull_request
