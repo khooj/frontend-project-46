@@ -23,3 +23,20 @@ jobs:
       - run: make install
       - run: make lint
       - run: make test
+
+  coverage:
+    needs: [ build ]
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: make install
+      - run: make test
+      - uses: paambaati/codeclimate-action@v2.2.4
+        with:
+          coverageCommand: make test-coverage
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
