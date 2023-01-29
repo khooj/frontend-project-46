@@ -17,7 +17,8 @@
   },
   "homepage": "https://github.com/khooj/frontend-project-46#readme",
   "dependencies": {
-    "commander": "^10.0.0"
+    "commander": "^10.0.0",
+    "js-yaml": "^4.1.0"
   },
   "bin": {
     "gendiff": "./bin/gendiff.js"

@@ -1,31 +1,20 @@
-import fs from 'fs';
 import path, { dirname } from 'path';
 import { test, expect } from '@jest/globals';
 import { fileURLToPath } from 'url';
 import genDiff from '../src/diff.js';
+import parse from '../src/parsers/parse.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const base = path.join(__dirname, '..', '__fixtures__');
 
-const loadFixtures = () => {
-  const base = path.join(__dirname, '..', '__fixtures__');
+test('gendiff', () => {
   const file1 = path.join(base, 'file1.json');
-  const file2 = path.join(base, 'file2.json');
-  const obj1 = JSON.parse(fs.readFileSync(file1, 'utf8'));
-  const obj2 = JSON.parse(fs.readFileSync(file2, 'utf8'));
-  return [obj1, obj2];
-};
+  const file2 = path.join(base, 'file2.yaml');
 
-let obj1; let
-  obj2;
+  const obj1 = parse(file1);
+  const obj2 = parse(file2);
 
-beforeEach(() => {
-  const [o1, o2] = loadFixtures();
-  obj1 = o1;
-  obj2 = o2;
-});
-
-test('main flow', () => {
   const result = genDiff(obj1, obj2);
   expect(result).toBe(`{
   - follow: false

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import fs from 'fs';
 import { Command } from 'commander';
 import genDiff from '../src/diff.js';
+import parseFile from '../src/parsers/parse.js';
 
 const program = new Command();
 program
@@ -13,10 +13,14 @@ program
   .argument('<filepath1>')
   .argument('<filepath2>')
   .action((filepath1, filepath2) => {
-    const file1 = JSON.parse(fs.readFileSync(filepath1, 'utf8'));
-    const file2 = JSON.parse(fs.readFileSync(filepath2, 'utf8'));
-    const result = genDiff(file1, file2);
-    console.log(result);
+    const obj1 = parseFile(filepath1);
+    const obj2 = parseFile(filepath2);
+    if (obj1 === null || obj2 === null) {
+      console.log('Only json and yaml format supported');
+      process.exit(-1);
+    }
+
+    console.log(genDiff(obj1, obj2));
   });
 
 program.parse();
