@@ -39,4 +39,4 @@ jobs:
         with:
           coverageCommand: make test-coverage
         env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
+          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_REPO_ID }}
