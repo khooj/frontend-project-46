@@ -11,3 +11,5 @@ lint:
 	npx eslint .
 
 .PHONY: test
+
+install: install-deps
