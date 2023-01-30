@@ -1,65 +1,3 @@
-const comparePrimitiveValues = (key, val1, val2) => {
-  const contains1 = val1 !== undefined;
-  const contains2 = val2 !== undefined;
-  if (contains1 && !contains2) {
-    return [{ type: 'first', key, value: val1 }];
-  } else if (!contains1 && contains2) {
-    return [{ type: 'second', key, value: val2 }];
-  } else if (contains1 && contains2) {
-    if (val1 === val2) {
-      return [{ type: 'equal', key, value: val1 }];
-    } else {
-      return [
-        { type: 'first', key, value: val1 },
-        { type: 'second', key, value: val2 },
-      ];
-    }
-  }
-  return [];
-};
-
-const diff = (parentKey, obj1, obj2) => {
-  const isArray = obj1 instanceof Array;
-  const isObj = obj1 instanceof Object;
-
-  if (!(isArray || isObj)) {
-    return comparePrimitiveValues(parentKey, obj1, obj2);
-  }
-
-  console.log(parentKey, obj1, obj2);
-  const keysSet = new Set([Object.keys(obj1), Object.keys(obj2)].flat());
-  const keys = [...keysSet].sort((a, b) => a.normalize().localeCompare(b.normalize()));
-
-  const result = keys.map((key) => {
-    const contains1 = Object.hasOwn(obj1, key);
-    const contains2 = Object.hasOwn(obj2, key);
-
-    if (contains1 && !contains2) {
-      return {
-        type: 'first',
-        key,
-        value: diff(key, obj1[key], obj2[key]),
-      };
-    } else if (!contains1 && contains2) {
-      return {
-        type: 'second',
-        key,
-        value: diff(key, obj1[key], obj2[key]),
-      };
-    } else if (contains1 && contains2) {
-      return {
-        type: 'equal',
-        key,
-        value: diff(key, obj1[key], obj2[key]),
-      };
-    }
-
-    return [];
-  });
-
-  return result;
-};
-
 // possible compares
 // object object
 // object primitive
@@ -94,8 +32,10 @@ const makeMetaTree = obj => {
 
 const getByKey = (tree, key) => tree.find(el => el.key === key);
 const diffElement = (type, { type: element, key, value }) => ({ type, element, key, value });
+const getUniqueElementsFromSecondSubtree = (tree1, tree2) => tree2.filter(el => !tree1.find(el2 => el2.key == el.key));
+const sortElements = tree => tree.sort((a, b) => a.key.normalize().localeCompare(b.key.normalize()));
 
-const diff2 = (obj1, obj2) => {
+const diff = (obj1, obj2) => {
   // [
   // если сравнение object-object
   //   { type: equal, key, value: [ 
@@ -116,10 +56,7 @@ const diff2 = (obj1, obj2) => {
   //   { type: equal, key, value: [ type: first/second, key, value ] }, // т.е. внутренности сравниваются как и object, только ключи - индексы
   // ]
 
-  // expects { type: primitive/array/object, key, value }
-  const compare2 = (subtree1, subtree2) => {
-    // console.log(JSON.stringify(subtree1, null, 2));
-    // console.log('comparing', subtree1, subtree2);
+  const compare = (subtree1, subtree2) => {
     if (subtree1 === undefined) {
       switch (subtree2.type) {
         case 'primitive':
@@ -128,7 +65,7 @@ const diff2 = (obj1, obj2) => {
         case 'object':
           return [diffElement(
             'second',
-            { ...subtree2, value: subtree2.value.flatMap(el => compare(el, el)) }
+            { ...subtree2, value: sortElements(subtree2.value.flatMap(el => compare(el, el))) }
           )];
       }
     }
@@ -148,7 +85,7 @@ const diff2 = (obj1, obj2) => {
           case 'object':
             return [
               diffElement('first', subtree1),
-              diffElement('second', { ...subtree2, value: subtree2.value.flatMap(el => compare(el, el)) }),
+              diffElement('second', { ...subtree2, value: sortElements(subtree2.value.flatMap(el => compare(el, el))) }),
             ];
         }
         break
@@ -157,68 +94,47 @@ const diff2 = (obj1, obj2) => {
         if (subtree2 === undefined) {
           return [diffElement(
             'first',
-            { ...subtree1, value: subtree1.value.flatMap(el => compare(el, el)) },
+            { ...subtree1, value: sortElements(subtree1.value.flatMap(el => compare(el, el))) },
           )];
         }
         switch (subtree2.type) {
           case 'primitive':
             return [
-              diffElement('first', { ...subtree1, value: subtree1.value.flatMap(el => compare(el, el)) }),
+              diffElement('first', { ...subtree1, value: sortElements(subtree1.value.flatMap(el => compare(el, el))) }),
               diffElement('second', subtree2),
             ];
           case 'array':
           case 'object':
             return [diffElement(
               'equal',
-              { ...subtree1, value: subtree1.value.flatMap(el => compare(el, getByKey(subtree2.value, el.key))) },
+              {
+                ...subtree1,
+                value: sortElements(subtree1.value
+                  .flatMap(el => compare(el, getByKey(subtree2.value, el.key)))
+                  .concat(
+                    getUniqueElementsFromSecondSubtree(subtree1.value, subtree2.value)
+                      .flatMap(el => compare(undefined, el))
+                  ),
+                ),
+              },
             )];
         }
     }
-    // return null;
   };
-
-  const compare = (sub1, sub2) => {
-    const r = compare2(sub1, sub2);
-    console.log('comparing', sub1, sub2, 'result', r);
-    return r;
-  };
-
-  // const iter = (subtree1, subtree2) => {
-  //   subtree1.map((el) => {
-  //     const el2 = getByKey(subtree2, el.key);
-  //   })
-  // };
 
   const tree1 = makeMetaTree(obj1);
   const tree2 = makeMetaTree(obj2);
-  // console.log(JSON.stringify(tree1, null, 2));
-  // console.log(JSON.stringify(tree2, null, 2));
 
   const result1 = tree1.flatMap(el => compare(el, getByKey(tree2, el.key)));
-  const result2 = tree2.filter(el => !!tree1.find((el2) => el2.key === el.key)).flatMap(el => compare(undefined, el));
-  return mergeTrees(result1, result2);
-};
-
-const mergeTrees = (tree1, tree2) => {
-  const res = tree1.map(el => {
-    if (['object', 'array'].includes(el.element) && getByKey(tree2, el.key) !== undefined) {
-      const k = getByKey(tree2, el.key);
-      return { ...el, value: mergeTrees(el.value, k.value) };
-    }
-    return el;
-  });
-  return res.concat(
-    Object.keys(tree2)
-      .filter(key => getByKey(tree1, key) !== undefined)
-      .map(key => getByKey(tree2, key)),
-  );
+  const result2 = getUniqueElementsFromSecondSubtree(tree1, tree2).flatMap(el => compare(undefined, el));
+  return sortElements(result1.concat(result2));
 };
 
 const getSymbol = type => {
   switch (type) {
     case 'equal': return ' ';
-    case 'first': return '+';
-    case 'second': return '-';
+    case 'first': return '-';
+    case 'second': return '+';
     default: return 'ERR';
   }
 };
@@ -226,8 +142,7 @@ const getSymbol = type => {
 const identStep = 4;
 
 const genDiff = (obj1, obj2) => {
-  const diffs = diff2(obj1, obj2);
-  return JSON.stringify(diffs, null, 2);
+  const diffs = diff(obj1, obj2);
 
   const iter = (el, identSize) => {
     switch (el.element) {
