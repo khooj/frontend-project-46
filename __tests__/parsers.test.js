@@ -15,10 +15,30 @@ test('json', () => {
 
   const obj1 = parseJSON(file1);
   expect(obj1).toEqual({
-    host: 'hexlet.io',
-    timeout: 50,
-    proxy: '123.234.53.22',
-    follow: false,
+    common: {
+      setting1: 'Value 1',
+      setting2: 200,
+      setting3: true,
+      setting6: {
+        key: 'value',
+        doge: {
+          wow: ''
+        }
+      }
+    },
+    group1: {
+      baz: 'bas',
+      foo: 'bar',
+      nest: {
+        key: 'value'
+      }
+    },
+    group2: {
+      abc: 12345,
+      deep: {
+        id: 45
+      }
+    }
   });
 });
 
@@ -30,10 +50,30 @@ test('yaml', () => {
 
   const obj1 = parseYAML(file1);
   expect(obj1).toEqual({
-    host: 'hexlet.io',
-    timeout: 50,
-    proxy: '123.234.53.22',
-    follow: false,
+    common: {
+      setting1: 'Value 1',
+      setting2: 200,
+      setting3: true,
+      setting6: {
+        key: 'value',
+        doge: {
+          wow: ''
+        }
+      }
+    },
+    group1: {
+      baz: 'bas',
+      foo: 'bar',
+      nest: {
+        key: 'value'
+      }
+    },
+    group2: {
+      abc: 12345,
+      deep: {
+        id: 45
+      }
+    }
   });
 });
 
@@ -41,18 +81,58 @@ test('select_parser', () => {
   const file1 = path.join(base, 'file1.json');
   const obj1 = selectParser(file1);
   expect(obj1).toEqual({
-    host: 'hexlet.io',
-    timeout: 50,
-    proxy: '123.234.53.22',
-    follow: false,
+    common: {
+      setting1: 'Value 1',
+      setting2: 200,
+      setting3: true,
+      setting6: {
+        key: 'value',
+        doge: {
+          wow: ''
+        }
+      }
+    },
+    group1: {
+      baz: 'bas',
+      foo: 'bar',
+      nest: {
+        key: 'value'
+      }
+    },
+    group2: {
+      abc: 12345,
+      deep: {
+        id: 45
+      }
+    }
   });
 
   const file2 = path.join(base, 'file1.yml');
   const obj2 = selectParser(file2);
   expect(obj2).toEqual({
-    host: 'hexlet.io',
-    timeout: 50,
-    proxy: '123.234.53.22',
-    follow: false,
+    common: {
+      setting1: 'Value 1',
+      setting2: 200,
+      setting3: true,
+      setting6: {
+        key: 'value',
+        doge: {
+          wow: ''
+        }
+      }
+    },
+    group1: {
+      baz: 'bas',
+      foo: 'bar',
+      nest: {
+        key: 'value'
+      }
+    },
+    group2: {
+      abc: 12345,
+      deep: {
+        id: 45
+      }
+    }
   });
 });
