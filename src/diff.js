@@ -117,8 +117,9 @@ const diff2 = (obj1, obj2) => {
   // ]
 
   // expects { type: primitive/array/object, key, value }
-  const compare = (subtree1, subtree2) => {
+  const compare2 = (subtree1, subtree2) => {
     // console.log(JSON.stringify(subtree1, null, 2));
+    // console.log('comparing', subtree1, subtree2);
     if (subtree1 === undefined) {
       switch (subtree2.type) {
         case 'primitive':
@@ -169,11 +170,17 @@ const diff2 = (obj1, obj2) => {
           case 'object':
             return [diffElement(
               'equal',
-              { ...subtree1.value.flatMap(el => compare(el, getByKey(subtree2.value, el.key))) },
+              { ...subtree1, value: subtree1.value.flatMap(el => compare(el, getByKey(subtree2.value, el.key))) },
             )];
         }
     }
     // return null;
+  };
+
+  const compare = (sub1, sub2) => {
+    const r = compare2(sub1, sub2);
+    console.log('comparing', sub1, sub2, 'result', r);
+    return r;
   };
 
   // const iter = (subtree1, subtree2) => {
@@ -189,7 +196,22 @@ const diff2 = (obj1, obj2) => {
 
   const result1 = tree1.flatMap(el => compare(el, getByKey(tree2, el.key)));
   const result2 = tree2.filter(el => !!tree1.find((el2) => el2.key === el.key)).flatMap(el => compare(undefined, el));
-  return result1.concat(result2);
+  return mergeTrees(result1, result2);
+};
+
+const mergeTrees = (tree1, tree2) => {
+  const res = tree1.map(el => {
+    if (['object', 'array'].includes(el.element) && getByKey(tree2, el.key) !== undefined) {
+      const k = getByKey(tree2, el.key);
+      return { ...el, value: mergeTrees(el.value, k.value) };
+    }
+    return el;
+  });
+  return res.concat(
+    Object.keys(tree2)
+      .filter(key => getByKey(tree1, key) !== undefined)
+      .map(key => getByKey(tree2, key)),
+  );
 };
 
 const getSymbol = type => {

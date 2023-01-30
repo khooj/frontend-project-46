@@ -47,7 +47,7 @@ const expectedOutput = fs.readFileSync(path.join(base, 'result.txt'), 'utf8');
 
 test('gendiff', () => {
   const file1 = path.join(base, 'file1.json');
-  const file2 = path.join(base, 'file2.yaml');
+  const file2 = path.join(base, 'file2.json');
 
   const obj1 = parse(file1);
   const obj2 = parse(file2);
