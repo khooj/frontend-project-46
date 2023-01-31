@@ -22,23 +22,23 @@ test('json', () => {
       setting6: {
         key: 'value',
         doge: {
-          wow: ''
-        }
-      }
+          wow: '',
+        },
+      },
     },
     group1: {
       baz: 'bas',
       foo: 'bar',
       nest: {
-        key: 'value'
-      }
+        key: 'value',
+      },
     },
     group2: {
       abc: 12345,
       deep: {
-        id: 45
-      }
-    }
+        id: 45,
+      },
+    },
   });
 });
 
@@ -57,23 +57,23 @@ test('yaml', () => {
       setting6: {
         key: 'value',
         doge: {
-          wow: ''
-        }
-      }
+          wow: '',
+        },
+      },
     },
     group1: {
       baz: 'bas',
       foo: 'bar',
       nest: {
-        key: 'value'
-      }
+        key: 'value',
+      },
     },
     group2: {
       abc: 12345,
       deep: {
-        id: 45
-      }
-    }
+        id: 45,
+      },
+    },
   });
 });
 
@@ -88,23 +88,23 @@ test('select_parser', () => {
       setting6: {
         key: 'value',
         doge: {
-          wow: ''
-        }
-      }
+          wow: '',
+        },
+      },
     },
     group1: {
       baz: 'bas',
       foo: 'bar',
       nest: {
-        key: 'value'
-      }
+        key: 'value',
+      },
     },
     group2: {
       abc: 12345,
       deep: {
-        id: 45
-      }
-    }
+        id: 45,
+      },
+    },
   });
 
   const file2 = path.join(base, 'file1.yml');
@@ -117,22 +117,22 @@ test('select_parser', () => {
       setting6: {
         key: 'value',
         doge: {
-          wow: ''
-        }
-      }
+          wow: '',
+        },
+      },
     },
     group1: {
       baz: 'bas',
       foo: 'bar',
       nest: {
-        key: 'value'
-      }
+        key: 'value',
+      },
     },
     group2: {
       abc: 12345,
       deep: {
-        id: 45
-      }
-    }
+        id: 45,
+      },
+    },
   });
 });
