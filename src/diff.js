@@ -36,7 +36,7 @@ const getByKey = (tree, key) => tree.find((el) => el.key === key);
 const diffElement = (type, { type: element, key, value }) => ({
   type, element, key, value,
 });
-const uniquesFromSecondTree = (tree1, tree2) => tree2.filter((el) => !tree1.find((el2) => el2.key === el.key));
+const uniquesFromSecondTree = (t1, t2) => t2.filter((el) => !t1.find((el2) => el2.key === el.key));
 const sortPredicate = (a, b) => a.key.normalize().localeCompare(b.key.normalize());
 
 const diff = (obj1, obj2) => {
@@ -47,7 +47,8 @@ const diff = (obj1, obj2) => {
   //     ...
   //   ]},
   // если сравнение object-primitive
-  //   { type: first, key, value: [ { type: equal, key, value } ] }, // т.е. все внутренние ключи должны отобразиться без плюса/минуса, так же и для second
+  // т.е. все внутренние ключи должны отобразиться без плюса/минуса, так же и для second
+  //   { type: first, key, value: [ { type: equal, key, value } ] },
   //   { type: second, key, value: primitive },
   // если сравнение object-array - аналогично object-primitive
   // если object-undefined, то как object-primitive, только без second для primitive
@@ -57,8 +58,16 @@ const diff = (obj1, obj2) => {
   //   { type: equal, key, value: val2 }, // если есть и там и там и равны
   // если primitive-array, то first для primitive и second для array с equal внутри
   // если array-array
-  //   { type: equal, key, value: [ type: first/second, key, value ] }, // т.е. внутренности сравниваются как и object, только ключи - индексы
+  // т.е. внутренности сравниваются как и object, только ключи - индексы
+  //   { type: equal, key, value: [ type: first/second, key, value ] },
   // ]
+
+  const returnRecursiveElement = (type, tree) => diffElement(
+    type,
+    // нельзя пофиксить ошибку линтера без переработки логики и увеличения копипасты.
+    // eslint-disable-next-line no-use-before-define
+    { ...tree, value: tree.value.flatMap((el) => compare(el, el)).sort(sortPredicate) },
+  );
 
   const returnUncheckedElement = (type, tree) => {
     switch (tree.type) {
@@ -66,15 +75,10 @@ const diff = (obj1, obj2) => {
         return [diffElement(type, tree)];
       case 'array':
       case 'object':
-        return [diffElement(
-          type,
-          { ...tree, value: tree.value.flatMap((el) => compare(el, el)).sort(sortPredicate) },
-        )];
+        return [returnRecursiveElement(type, tree)];
+      default:
+        throw new Error(`unsupported type: ${tree.type}`);
     }
-  };
-
-  const returnRecursiveElement = (type, tree) => {
-    return diffElement(type, { ...tree, value: tree.value.flatMap((el) => compare(el, el)).sort(sortPredicate) });
   };
 
   const compare = (subtree1, subtree2) => {
@@ -100,6 +104,8 @@ const diff = (obj1, obj2) => {
               diffElement('first', subtree1),
               returnRecursiveElement('second', subtree2),
             ];
+          default:
+            throw new Error(`unsupported tree type: ${subtree2.type}`);
         }
       case 'array':
       case 'object':
@@ -124,7 +130,11 @@ const diff = (obj1, obj2) => {
                   .sort(sortPredicate),
               },
             )];
+          default:
+            throw new Error(`unsupported tree type: ${subtree2.type}`);
         }
+      default:
+        throw new Error(`unsupported tree type: ${subtree1.type}`);
     }
   };
 

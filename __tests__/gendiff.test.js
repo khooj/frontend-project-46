@@ -40,5 +40,5 @@ test('gendiff wrong formatter', () => {
   const obj1 = parse(file1);
   const obj2 = parse(file2);
 
-  expect(() => genDiff(obj1, obj2, 'default')).toThrowError();
+  expect(() => genDiff(obj1, obj2, 'default')).toThrow();
 });
