@@ -8,7 +8,6 @@ const groupByFirst = (acc, el) => {
 };
 
 const mergeFirstSecond = diffs => {
-  // console.log(diffs.reduce(groupByFirst, {}));
   const result = Object.values(diffs.reduce(groupByFirst, {})).map(el => {
     if (['object', 'array'].includes(el.element)) {
       return {
@@ -20,12 +19,33 @@ const mergeFirstSecond = diffs => {
     return el;
   });
 
-  // console.log(result);
   return Object.values(result);
 };
 
+const isComplexObject = node => ['object', 'array'].includes(node.element);
+const formatValue = elem => {
+  if (elem.element === 'primitive') {
+    if (typeof (elem.value) === 'string') {
+      return `'${elem.value}'`;
+    } else {
+      return `${elem.value}`;
+    }
+  }
+  if (isComplexObject(elem)) {
+    return '[complex value]';
+  }
+  throw new Error(`unsupported node type: ${elem.element}`);
+};
+
+const formatKey = (el, parentType) => {
+  if (parentType === 'array') {
+    return `[${el.key}]`;
+  }
+  return `${el.key}`;
+};
+
 const plain = (diffs) => {
-  const iter = (el, parentPath) => {
+  const iter = (el, parentPath, parentType) => {
     switch (el.element) {
       case 'primitive':
         let op;
@@ -33,29 +53,38 @@ const plain = (diffs) => {
           case 'first':
             op = `was removed`;
             if (el.second) {
-              op = `was updated. From ${el.value} to ${el.second.value}`;
+              op = `was updated. From ${formatValue(el)} to ${formatValue(el.second)}`;
             }
             break
           case 'second':
-            op = `was added with value: ${el.value}`;
+            op = `was added with value: ${formatValue(el)}`;
             break
           case 'equal':
             return null;
           default:
             throw new Error(`unsupported tree type: ${el.type}`);
         }
-        return `Property '${parentPath === '' ? '' : parentPath + '.'}${el.key}' ${op}`;
+        return `Property '${parentPath}${formatKey(el, parentType)}' ${op}`;
       case 'object':
       case 'array':
+        if (el.type === 'second') {
+          return `Property '${parentPath}${formatKey(el, parentType)}' was added with value: [complex value]`;
+        }
+        if (el.type === 'first' && el.second) {
+          return `Property '${parentPath}${formatKey(el, parentType)}' was updated. From ${formatValue(el)} to ${formatValue(el.second)}`;
+        }
+        if (el.type === 'first' && !el.second) {
+          return `Property '${parentPath}${formatKey(el, parentType)}' was removed`;
+        }
+
         const r = mergeFirstSecond(el.value);
-        return r.flatMap(el2 => iter(el2, `${parentPath}${el.key}`));
+        return r.flatMap(el2 => iter(el2, `${parentPath}${formatKey(el, parentType)}.`, el.element));
       default:
         throw new Error(`unsupported tree type: ${el.element}`);
     }
   };
 
-  // console.log(mergeFirstSecond(diffs), null, 2);
-  return mergeFirstSecond(diffs).flatMap(el => iter(el, '')).join('\n');
+  return mergeFirstSecond(diffs).flatMap(el => iter(el, '', '')).filter(el => !!el).join('\n');
 };
 
 export default plain;
