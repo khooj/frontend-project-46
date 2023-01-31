@@ -11,7 +11,8 @@ const base = path.join(__dirname, '..', '__fixtures__');
 
 const expectedOutput = fs.readFileSync(path.join(base, 'result.txt'), 'utf8');
 const expectedPlainOutput = fs.readFileSync(path.join(base, 'result_plain.txt'), 'utf8');
-let obj1, obj2;
+let obj1; let
+  obj2;
 
 beforeEach(() => {
   const file1 = path.join(base, 'file1.json');
@@ -22,12 +23,12 @@ beforeEach(() => {
 });
 
 test('gendiff json', () => {
-  const result = genDiff(obj1, obj2);
+  const result = genDiff(obj1, obj2, 'stylish');
   expect(result).toBe(expectedOutput);
 });
 
 test('gendiff yaml', () => {
-  const result = genDiff(obj1, obj2);
+  const result = genDiff(obj1, obj2, 'stylish');
   expect(result).toBe(expectedOutput);
 });
 

@@ -7,8 +7,8 @@ const groupByFirst = (acc, el) => {
   return acc;
 };
 
-const mergeFirstSecond = diffs => {
-  const result = Object.values(diffs.reduce(groupByFirst, {})).map(el => {
+const mergeFirstSecond = (diffs) => {
+  const result = Object.values(diffs.reduce(groupByFirst, {})).map((el) => {
     if (['object', 'array'].includes(el.element)) {
       return {
         ...el,
@@ -22,14 +22,13 @@ const mergeFirstSecond = diffs => {
   return Object.values(result);
 };
 
-const isComplexObject = node => ['object', 'array'].includes(node.element);
-const formatValue = elem => {
+const isComplexObject = (node) => ['object', 'array'].includes(node.element);
+const formatValue = (elem) => {
   if (elem.element === 'primitive') {
     if (typeof (elem.value) === 'string') {
       return `'${elem.value}'`;
-    } else {
-      return `${elem.value}`;
     }
+    return `${elem.value}`;
   }
   if (isComplexObject(elem)) {
     return '[complex value]';
@@ -46,19 +45,19 @@ const formatKey = (el, parentType) => {
 
 const plain = (diffs) => {
   const iter = (el, parentPath, parentType) => {
+    let op;
     switch (el.element) {
       case 'primitive':
-        let op;
         switch (el.type) {
           case 'first':
-            op = `was removed`;
+            op = 'was removed';
             if (el.second) {
               op = `was updated. From ${formatValue(el)} to ${formatValue(el.second)}`;
             }
-            break
+            break;
           case 'second':
             op = `was added with value: ${formatValue(el)}`;
-            break
+            break;
           case 'equal':
             return null;
           default:
@@ -77,14 +76,13 @@ const plain = (diffs) => {
           return `Property '${parentPath}${formatKey(el, parentType)}' was removed`;
         }
 
-        const r = mergeFirstSecond(el.value);
-        return r.flatMap(el2 => iter(el2, `${parentPath}${formatKey(el, parentType)}.`, el.element));
+        return mergeFirstSecond(el.value).flatMap((el2) => iter(el2, `${parentPath}${formatKey(el, parentType)}.`, el.element));
       default:
         throw new Error(`unsupported tree type: ${el.element}`);
     }
   };
 
-  return mergeFirstSecond(diffs).flatMap(el => iter(el, '', '')).filter(el => !!el).join('\n');
+  return mergeFirstSecond(diffs).flatMap((el) => iter(el, '', '')).filter((el) => !!el).join('\n');
 };
 
 export default plain;

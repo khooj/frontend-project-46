@@ -1,5 +1,4 @@
-import stylish from './formatters/stylish.js';
-import plain from './formatters/plain.js';
+import getFormatter from './formatters/index.js';
 
 // possible compares
 // object object
@@ -147,13 +146,10 @@ const diff = (obj1, obj2) => {
   return result1.concat(result2).sort(sortPredicate);
 };
 
-const genDiff = (obj1, obj2, formatter = 'stylish') => {
+const genDiff = (obj1, obj2, format) => {
   const diffs = diff(obj1, obj2);
-  switch (formatter) {
-    case 'stylish': return stylish(diffs);
-    case 'plain': return plain(diffs);
-    default: throw new Error('formatter not supported');
-  }
+  const formatter = getFormatter(format);
+  return formatter(diffs);
 };
 
 export default genDiff;
