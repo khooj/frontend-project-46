@@ -12,3 +12,6 @@
 
 ## Supported output format (stylish)
 [![asciicast](https://asciinema.org/a/C4K1lpS12cPHdOg2d6xLiViqD.svg)](https://asciinema.org/a/C4K1lpS12cPHdOg2d6xLiViqD)
+
+## Plain format
+[![asciicast](https://asciinema.org/a/SlrEPTdbbrPCQ8qwDvyfJQj2X.svg)](https://asciinema.org/a/SlrEPTdbbrPCQ8qwDvyfJQj2X)
