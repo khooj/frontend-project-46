@@ -36,8 +36,8 @@ const getByKey = (tree, key) => tree.find((el) => el.key === key);
 const diffElement = (type, { type: element, key, value }) => ({
   type, element, key, value,
 });
-const getUniqueElementsFromSecondSubtree = (tree1, tree2) => tree2.filter((el) => !tree1.find((el2) => el2.key == el.key));
-const sortElements = (tree) => tree.sort((a, b) => a.key.normalize().localeCompare(b.key.normalize()));
+const uniquesFromSecondTree = (tree1, tree2) => tree2.filter((el) => !tree1.find((el2) => el2.key === el.key));
+const sortPredicate = (a, b) => a.key.normalize().localeCompare(b.key.normalize());
 
 const diff = (obj1, obj2) => {
   // [
@@ -69,7 +69,7 @@ const diff = (obj1, obj2) => {
         case 'object':
           return [diffElement(
             'second',
-            { ...subtree2, value: sortElements(subtree2.value.flatMap((el) => compare(el, el))) },
+            { ...subtree2, value: subtree2.value.flatMap((el) => compare(el, el)).sort(sortPredicate) },
           )];
       }
     }
@@ -89,7 +89,7 @@ const diff = (obj1, obj2) => {
           case 'object':
             return [
               diffElement('first', subtree1),
-              diffElement('second', { ...subtree2, value: sortElements(subtree2.value.flatMap((el) => compare(el, el))) }),
+              diffElement('second', { ...subtree2, value: subtree2.value.flatMap((el) => compare(el, el)).sort(sortPredicate) }),
             ];
         }
         break;
@@ -98,13 +98,13 @@ const diff = (obj1, obj2) => {
         if (subtree2 === undefined) {
           return [diffElement(
             'first',
-            { ...subtree1, value: sortElements(subtree1.value.flatMap((el) => compare(el, el))) },
+            { ...subtree1, value: subtree1.value.flatMap((el) => compare(el, el)).sort(sortPredicate) },
           )];
         }
         switch (subtree2.type) {
           case 'primitive':
             return [
-              diffElement('first', { ...subtree1, value: sortElements(subtree1.value.flatMap((el) => compare(el, el))) }),
+              diffElement('first', { ...subtree1, value: subtree1.value.flatMap((el) => compare(el, el)).sort(sortPredicate) }),
               diffElement('second', subtree2),
             ];
           case 'array':
@@ -113,12 +113,13 @@ const diff = (obj1, obj2) => {
               'equal',
               {
                 ...subtree1,
-                value: sortElements(subtree1.value
+                value: subtree1.value
                   .flatMap((el) => compare(el, getByKey(subtree2.value, el.key)))
                   .concat(
-                    getUniqueElementsFromSecondSubtree(subtree1.value, subtree2.value)
+                    uniquesFromSecondTree(subtree1.value, subtree2.value)
                       .flatMap((el) => compare(undefined, el)),
-                  )),
+                  )
+                  .sort(sortPredicate),
               },
             )];
         }
@@ -129,8 +130,8 @@ const diff = (obj1, obj2) => {
   const tree2 = makeMetaTree(obj2);
 
   const result1 = tree1.flatMap((el) => compare(el, getByKey(tree2, el.key)));
-  const result2 = getUniqueElementsFromSecondSubtree(tree1, tree2).flatMap((el) => compare(undefined, el));
-  return sortElements(result1.concat(result2));
+  const result2 = uniquesFromSecondTree(tree1, tree2).flatMap((el) => compare(undefined, el));
+  return result1.concat(result2).sort(sortPredicate);
 };
 
 const genDiff = (obj1, obj2, formatter = 'stylish') => {

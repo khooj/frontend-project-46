@@ -10,10 +10,10 @@ const getSymbol = (type) => {
 const identStep = 4;
 
 const stylish = (diffs) => {
-  const iter = (el, identSize) => {
+  const iter = (el, identSize, parentType = null) => {
     switch (el.element) {
       case 'primitive':
-        return `${' '.repeat(identSize - 2)}${getSymbol(el.type)} ${el.key}: ${el.value}`;
+        return `${' '.repeat(identSize - 2)}${getSymbol(el.type)} ${parentType === 'array' ? '' : el.key + ': '}${el.value}`;
       case 'object':
         return [
           `${' '.repeat(identSize - 2)}${getSymbol(el.type)} ${el.key}: {`,
@@ -23,8 +23,8 @@ const stylish = (diffs) => {
       case 'array':
         return [
           `${' '.repeat(identSize - 2)}${getSymbol(el.type)} ${el.key}: [`,
-          ...el.value.flatMap((el) => iter(el, identSize + identStep)),
-          `${' '.repeat(identSize)}}`,
+          ...el.value.flatMap((el) => iter(el, identSize + identStep, 'array')),
+          `${' '.repeat(identSize)}]`,
         ].join('\n');
     }
   };

@@ -25,6 +25,8 @@ test('json', () => {
           wow: '',
         },
       },
+      setting7: [1, 2, 3],
+      setting8: [4, 5, 6],
     },
     group1: {
       baz: 'bas',
@@ -60,6 +62,8 @@ test('yaml', () => {
           wow: '',
         },
       },
+      setting7: [1, 2, 3],
+      setting8: [4, 5, 6],
     },
     group1: {
       baz: 'bas',
@@ -91,6 +95,8 @@ test('select_parser', () => {
           wow: '',
         },
       },
+      setting7: [1, 2, 3],
+      setting8: [4, 5, 6],
     },
     group1: {
       baz: 'bas',
@@ -120,6 +126,8 @@ test('select_parser', () => {
           wow: '',
         },
       },
+      setting7: [1, 2, 3],
+      setting8: [4, 5, 6],
     },
     group1: {
       baz: 'bas',
