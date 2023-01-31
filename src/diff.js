@@ -1,4 +1,5 @@
 import stylish from './formatters/stylish.js';
+import plain from './formatters/plain.js';
 
 // possible compares
 // object object
@@ -150,6 +151,7 @@ const genDiff = (obj1, obj2, formatter = 'stylish') => {
   const diffs = diff(obj1, obj2);
   switch (formatter) {
     case 'stylish': return stylish(diffs);
+    case 'plain': return plain(diffs);
     default: throw new Error('formatter not supported');
   }
 };
