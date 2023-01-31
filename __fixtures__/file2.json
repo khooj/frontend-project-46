@@ -23,7 +23,10 @@
     "setting9": [
       null,
       "string"
-    ]
+    ],
+    "setting10": {
+      "asd": 20
+    }
   },
   "group1": {
     "foo": "bar",

@@ -60,24 +60,33 @@ const diff = (obj1, obj2) => {
   //   { type: equal, key, value: [ type: first/second, key, value ] }, // т.е. внутренности сравниваются как и object, только ключи - индексы
   // ]
 
+  const returnUncheckedElement = (type, tree) => {
+    switch (tree.type) {
+      case 'primitive':
+        return [diffElement(type, tree)];
+      case 'array':
+      case 'object':
+        return [diffElement(
+          type,
+          { ...tree, value: tree.value.flatMap((el) => compare(el, el)).sort(sortPredicate) },
+        )];
+    }
+  };
+
+  const returnRecursiveElement = (type, tree) => {
+    return diffElement(type, { ...tree, value: tree.value.flatMap((el) => compare(el, el)).sort(sortPredicate) });
+  };
+
   const compare = (subtree1, subtree2) => {
     if (subtree1 === undefined) {
-      switch (subtree2.type) {
-        case 'primitive':
-          return [diffElement('second', subtree2)];
-        case 'array':
-        case 'object':
-          return [diffElement(
-            'second',
-            { ...subtree2, value: subtree2.value.flatMap((el) => compare(el, el)).sort(sortPredicate) },
-          )];
-      }
+      return returnUncheckedElement('second', subtree2);
     }
+    if (subtree2 === undefined) {
+      return returnUncheckedElement('first', subtree1);
+    }
+
     switch (subtree1.type) {
       case 'primitive':
-        if (subtree2 === undefined) {
-          return [diffElement('first', subtree1)];
-        }
         switch (subtree2.type) {
           case 'primitive':
             if (subtree1.value === subtree2.value) {
@@ -89,22 +98,15 @@ const diff = (obj1, obj2) => {
           case 'object':
             return [
               diffElement('first', subtree1),
-              diffElement('second', { ...subtree2, value: subtree2.value.flatMap((el) => compare(el, el)).sort(sortPredicate) }),
+              returnRecursiveElement('second', subtree2),
             ];
         }
-        break;
       case 'array':
       case 'object':
-        if (subtree2 === undefined) {
-          return [diffElement(
-            'first',
-            { ...subtree1, value: subtree1.value.flatMap((el) => compare(el, el)).sort(sortPredicate) },
-          )];
-        }
         switch (subtree2.type) {
           case 'primitive':
             return [
-              diffElement('first', { ...subtree1, value: subtree1.value.flatMap((el) => compare(el, el)).sort(sortPredicate) }),
+              returnRecursiveElement('first', subtree1),
               diffElement('second', subtree2),
             ];
           case 'array':
@@ -138,7 +140,7 @@ const genDiff = (obj1, obj2, formatter = 'stylish') => {
   const diffs = diff(obj1, obj2);
   switch (formatter) {
     case 'stylish': return stylish(diffs);
-    default: throw Error('formatter not supported');
+    default: throw new Error('formatter not supported');
   }
 };
 

@@ -2,6 +2,10 @@
     common: {
       + follow: false
         setting1: Value 1
+      - setting10: 10
+      + setting10: {
+            asd: 20
+        }
       - setting2: 200
       - setting3: true
       + setting3: null

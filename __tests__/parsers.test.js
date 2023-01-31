@@ -27,6 +27,7 @@ test('json', () => {
       },
       setting7: [1, 2, 3],
       setting8: [4, 5, 6],
+      setting10: 10,
     },
     group1: {
       baz: 'bas',
@@ -64,6 +65,7 @@ test('yaml', () => {
       },
       setting7: [1, 2, 3],
       setting8: [4, 5, 6],
+      setting10: 10,
     },
     group1: {
       baz: 'bas',
@@ -97,6 +99,7 @@ test('select_parser', () => {
       },
       setting7: [1, 2, 3],
       setting8: [4, 5, 6],
+      setting10: 10,
     },
     group1: {
       baz: 'bas',
@@ -128,6 +131,7 @@ test('select_parser', () => {
       },
       setting7: [1, 2, 3],
       setting8: [4, 5, 6],
+      setting10: 10,
     },
     group1: {
       baz: 'bas',

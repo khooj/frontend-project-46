@@ -32,3 +32,13 @@ test('gendiff yaml', () => {
   const result = genDiff(obj1, obj2);
   expect(result).toBe(expectedOutput);
 });
+
+test('gendiff wrong formatter', () => {
+  const file1 = path.join(base, 'file1.yml');
+  const file2 = path.join(base, 'file2.yaml');
+
+  const obj1 = parse(file1);
+  const obj2 = parse(file2);
+
+  expect(() => genDiff(obj1, obj2, 'default')).toThrowError();
+});
