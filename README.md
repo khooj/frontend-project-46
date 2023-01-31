@@ -9,3 +9,6 @@
 
 ## Different files format
 [![asciicast](https://asciinema.org/a/KVNImwzXhPSuTTi1SgkoplW3u.svg)](https://asciinema.org/a/KVNImwzXhPSuTTi1SgkoplW3u)
+
+## Supported output format (stylish)
+[![asciicast](https://asciinema.org/a/C4K1lpS12cPHdOg2d6xLiViqD.svg)](https://asciinema.org/a/C4K1lpS12cPHdOg2d6xLiViqD)
