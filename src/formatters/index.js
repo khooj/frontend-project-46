@@ -4,10 +4,10 @@ import json from './json.js';
 
 export default (format) => {
   switch (format) {
-    case 'stylish': return stylish;
     case 'plain': return plain;
     case 'json': return json;
+    case 'stylish':
     default:
-      throw new Error(`unsupported format: ${format}`);
+      return stylish;
   }
 };
