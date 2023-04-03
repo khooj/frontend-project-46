@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
-import path from 'path';
 import { Command } from 'commander';
 import genDiff from '../src/diff.js';
-import parseFile from '../src/parsers/parse.js';
 
 const program = new Command();
 program
@@ -14,16 +12,7 @@ program
   .argument('<filepath2>')
   .option('-f, --format <type>', 'output format', 'stylish')
   .action((filepath1, filepath2, options) => {
-    const filepathFirst = path.resolve(process.cwd(), filepath1);
-    const obj1 = parseFile(filepathFirst);
-    const filepathSecond = path.resolve(process.cwd(), filepath2);
-    const obj2 = parseFile(filepathSecond);
-    if (obj1 === null || obj2 === null) {
-      console.log('Only json and yaml format supported');
-      process.exit(-1);
-    }
-
-    console.log(genDiff(obj1, obj2, options.format));
+    console.log(genDiff(filepath1, filepath2, options.format));
   });
 
 program.parse();

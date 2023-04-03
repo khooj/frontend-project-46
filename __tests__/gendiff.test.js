@@ -32,10 +32,6 @@ test('gendiff yaml', () => {
   expect(result).toBe(expectedOutput);
 });
 
-test('gendiff wrong formatter', () => {
-  expect(() => genDiff(obj1, obj2, 'default')).toThrow();
-});
-
 test('gendiff plain', () => {
   const result = genDiff(obj1, obj2, 'plain');
   expect(result).toBe(expectedPlainOutput);

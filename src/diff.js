@@ -1,4 +1,6 @@
+import path from 'path';
 import getFormatter from './formatters/index.js';
+import parseFile from './parsers/parse.js';
 
 // possible compares
 // object object
@@ -146,7 +148,16 @@ const diff = (obj1, obj2) => {
   return result1.concat(result2).sort(sortPredicate);
 };
 
-const genDiff = (obj1, obj2, format) => {
+const genDiff = (filepath1, filepath2, format) => {
+  const filepathFirst = path.resolve(process.cwd(), filepath1);
+  const obj1 = parseFile(filepathFirst);
+  const filepathSecond = path.resolve(process.cwd(), filepath2);
+  const obj2 = parseFile(filepathSecond);
+  if (obj1 === null || obj2 === null) {
+    console.log('Only json and yaml format supported');
+    process.exit(-1);
+  }
+
   const diffs = diff(obj1, obj2);
   const formatter = getFormatter(format);
   return formatter(diffs);
