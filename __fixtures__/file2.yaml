@@ -10,8 +10,6 @@ common:
     ops: vops
     doge:
       wow: so much
-  setting7: [1, 4, 5, 6]
-  setting9: [null, "string"]
   setting10:
     asd: 20
 group1:

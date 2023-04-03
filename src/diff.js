@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import path from 'path';
 import getFormatter from './formatters/index.js';
 import parseFile from './parsers/parse.js';
@@ -15,20 +16,24 @@ import parseFile from './parsers/parse.js';
 
 const makeMetaTree = (obj) => {
   const result = Object.keys(obj).map((key) => {
-    let t = 'primitive';
-    let v = obj[key];
     if (obj[key] instanceof Object) {
-      t = 'object';
-      v = makeMetaTree(obj[key]);
+      return {
+        type: 'object',
+        key,
+        value: makeMetaTree(obj[key]),
+      };
     }
     if (obj[key] instanceof Array) {
-      t = 'array';
-      v = makeMetaTree(obj[key]);
+      return {
+        type: 'array',
+        key,
+        value: makeMetaTree(obj[key]),
+      };
     }
     return {
-      type: t,
+      type: 'primitive',
       key,
-      value: v,
+      value: obj[key],
     };
   });
   return result;
@@ -39,7 +44,8 @@ const diffElement = (type, { type: element, key, value }) => ({
   type, element, key, value,
 });
 const uniquesFromSecondTree = (t1, t2) => t2.filter((el) => !t1.find((el2) => el2.key === el.key));
-const sortPredicate = (a, b) => a.key.normalize().localeCompare(b.key.normalize());
+// const sortPredicate = (a, b) => a.key.normalize().localeCompare(b.key.normalize());
+const sortPredicate = (a) => a.key;
 
 const diff = (obj1, obj2) => {
   // [
@@ -68,7 +74,7 @@ const diff = (obj1, obj2) => {
     type,
     // нельзя пофиксить ошибку линтера без переработки логики и увеличения копипасты.
     // eslint-disable-next-line no-use-before-define
-    { ...tree, value: tree.value.flatMap((el) => compare(el, el)).sort(sortPredicate) },
+    { ...tree, value: _.sortBy(tree.value.flatMap((el) => compare(el, el)), [sortPredicate]) },
   );
 
   const returnUncheckedElement = (type, tree) => {
@@ -123,13 +129,15 @@ const diff = (obj1, obj2) => {
               'equal',
               {
                 ...subtree1,
-                value: subtree1.value
-                  .flatMap((el) => compare(el, getByKey(subtree2.value, el.key)))
-                  .concat(
-                    uniquesFromSecondTree(subtree1.value, subtree2.value)
-                      .flatMap((el) => compare(undefined, el)),
-                  )
-                  .sort(sortPredicate),
+                value: _.sortBy(
+                  subtree1.value
+                    .flatMap((el) => compare(el, getByKey(subtree2.value, el.key)))
+                    .concat(
+                      uniquesFromSecondTree(subtree1.value, subtree2.value)
+                        .flatMap((el) => compare(undefined, el)),
+                    ),
+                  [sortPredicate],
+                ),
               },
             )];
           default:
@@ -145,7 +153,7 @@ const diff = (obj1, obj2) => {
 
   const result1 = tree1.flatMap((el) => compare(el, getByKey(tree2, el.key)));
   const result2 = uniquesFromSecondTree(tree1, tree2).flatMap((el) => compare(undefined, el));
-  return result1.concat(result2).sort(sortPredicate);
+  return _.sortBy(result1.concat(result2), [sortPredicate]);
 };
 
 const genDiff = (filepath1, filepath2, format) => {

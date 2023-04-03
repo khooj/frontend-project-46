@@ -25,8 +25,6 @@ test('json', () => {
           wow: '',
         },
       },
-      setting7: [1, 2, 3],
-      setting8: [4, 5, 6],
       setting10: 10,
     },
     group1: {
@@ -63,8 +61,6 @@ test('yaml', () => {
           wow: '',
         },
       },
-      setting7: [1, 2, 3],
-      setting8: [4, 5, 6],
       setting10: 10,
     },
     group1: {
@@ -97,8 +93,6 @@ test('select_parser', () => {
           wow: '',
         },
       },
-      setting7: [1, 2, 3],
-      setting8: [4, 5, 6],
       setting10: 10,
     },
     group1: {
@@ -129,8 +123,6 @@ test('select_parser', () => {
           wow: '',
         },
       },
-      setting7: [1, 2, 3],
-      setting8: [4, 5, 6],
       setting10: 10,
     },
     group1: {

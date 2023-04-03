@@ -1,10 +1,11 @@
 const groupByFirst = (acc, el) => {
   const k = el.key;
-  acc[k] = acc[k] ?? el;
-  if (acc[k].type === 'first' && el.type === 'second') {
-    acc[k].second = el;
+  const newEl = acc[k] ?? el;
+  if (newEl.type === 'first' && el.type === 'second') {
+    // acc[k].second = el;
+    return { ...acc, [k]: { ...newEl, second: el } };
   }
-  return acc;
+  return { ...acc, [k]: newEl };
 };
 
 const mergeFirstSecond = (diffs) => {
@@ -43,27 +44,26 @@ const formatKey = (el, parentType) => {
   return `${el.key}`;
 };
 
+const primitiveString = (parentPath, key, op) => `Property '${parentPath}${key}' ${op}`;
+
 const plain = (diffs) => {
   const iter = (el, parentPath, parentType) => {
-    let op;
+    const key = formatKey(el, parentType);
     switch (el.element) {
       case 'primitive':
         switch (el.type) {
           case 'first':
-            op = 'was removed';
             if (el.second) {
-              op = `was updated. From ${formatValue(el)} to ${formatValue(el.second)}`;
+              return primitiveString(parentPath, key, `was updated. From ${formatValue(el)} to ${formatValue(el.second)}`);
             }
-            break;
+            return primitiveString(parentPath, key, 'was removed');
           case 'second':
-            op = `was added with value: ${formatValue(el)}`;
-            break;
+            return primitiveString(parentPath, key, `was added with value: ${formatValue(el)}`);
           case 'equal':
             return null;
           default:
             throw new Error(`unsupported tree type: ${el.type}`);
         }
-        return `Property '${parentPath}${formatKey(el, parentType)}' ${op}`;
       case 'object':
       case 'array':
         if (el.type === 'second') {

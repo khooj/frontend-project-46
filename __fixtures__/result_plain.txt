@@ -6,11 +6,6 @@ Property 'common.setting4' was added with value: 'blah blah'
 Property 'common.setting5' was added with value: [complex value]
 Property 'common.setting6.doge.wow' was updated. From '' to 'so much'
 Property 'common.setting6.ops' was added with value: 'vops'
-Property 'common.setting7.[1]' was updated. From 2 to 4
-Property 'common.setting7.[2]' was updated. From 3 to 5
-Property 'common.setting7.[3]' was added with value: 6
-Property 'common.setting8' was removed
-Property 'common.setting9' was added with value: [complex value]
 Property 'group1.baz' was updated. From 'bas' to 'bars'
 Property 'group1.nest' was updated. From [complex value] to 'str'
 Property 'group2' was removed
